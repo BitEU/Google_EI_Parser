@@ -1,0 +1,6 @@
+/.vs
+/google-ei-time.build
+/google-ei-time.dist
+/google-ei-time.onefile-build
+nuitka-crash-report.xml
+*.exe

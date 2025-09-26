@@ -22,3 +22,7 @@ F:\Projects\Google_EI_Parser\google-ei-time.py:123: DeprecationWarning: datetime
   datetimestr = datetime.datetime.utcfromtimestamp(timestamp).strftime('%Y-%m-%dT%H:%M:%S')
 Human readable timestamp (UTC) = 2025-09-26T16:31:59
 ```
+
+
+Compile with:
+```python -m nuitka --standalone --onefile google-ei-time.py```
