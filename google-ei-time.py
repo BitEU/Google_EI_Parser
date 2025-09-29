@@ -27,6 +27,7 @@
 # Version History:
 # v2014-10-10 Initial Version
 # v2025-09-26 Updated for Python 3 compatibility
+# v2025-09-29 Fixed deprecation warning with timezone-aware datetime
 
 import sys
 from optparse import OptionParser
@@ -34,7 +35,7 @@ import datetime
 import base64
 from urllib.parse import urlparse, parse_qs
 
-version_string = "google-ei-time.py v2025-09-26 (Python 3)"
+version_string = "google-ei-time.py v2025-09-29 (Python 3)"
 usage = "%prog -e EITERM -q OR %prog -u URL -q"
 
 parser = OptionParser(usage=usage)
@@ -52,20 +53,20 @@ parser.add_option("-q", dest="quiet",
 if not (options.quiet):
     print("Running " + version_string + "\n")
 
-# No arguments given by user, print help and exit
+# No arguments given by user, print help and sys.exit
 if len(sys.argv) == 1:
     parser.print_help()
-    exit(-1)
+    sys.exit(-1)
 
 if ((options.eiterm == None) and (options.url == None)):
     print("Error! Neither ei or URL terms were specified. Choose one!\n")
     parser.print_help()
-    exit(-1)
+    sys.exit(-1)
 
 if ((options.eiterm != None) and (options.url != None)):
     print("Error! BOTH ei and URL terms were specified. Choose one!\n")
     parser.print_help()
-    exit(-1)
+    sys.exit(-1)
 
 ei = ""
 if (options.url != None):    
@@ -75,7 +76,7 @@ if (options.url != None):
     if ("ei" not in parsed.query):
         if not (options.quiet):
             print("No ei parameter found in URL!")
-        exit(-1)
+        sys.exit(-1)
 
     # search parsed query for "ei" parameter and extract the returned list item
     # parse_qs returns a dictionary item, hence the following ["ei"]. 
@@ -120,7 +121,8 @@ if not (options.quiet):
     print("Extracted timestamp = " + str(timestamp))
 
 try: 
-    datetimestr = datetime.datetime.utcfromtimestamp(timestamp).strftime('%Y-%m-%dT%H:%M:%S')
+    # Use timezone-aware datetime (Python 3.11+) to avoid deprecation warning
+    datetimestr = datetime.datetime.fromtimestamp(timestamp, datetime.UTC).strftime('%Y-%m-%dT%H:%M:%S')
 except:
     datetimestr = "Unknown"
 
@@ -129,4 +131,4 @@ if not (options.quiet):
 else:
     print(datetimestr)
 
-exit(0)
+sys.exit(0)
